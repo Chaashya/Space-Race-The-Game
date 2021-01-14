@@ -32,23 +32,23 @@ namespace Space_Race
           */
             do
             {
-                int player_num = AskForPlayers();
-                SpaceRaceGame.NumberOfPlayers = player_num;
+                int numberOfPlayers = GetInput_numberOfPlayers();
+                SpaceRaceGame.NumberOfPlayers = numberOfPlayers;
                 SpaceRaceGame.SetUpPlayers();
-                int round_num = 0;
-                SpaceRaceGame.GameFinished = false;
-                while (!SpaceRaceGame.GameFinished)
+                int roundNumber = 0;
+                SpaceRaceGame.GameOver= false;
+                while (!SpaceRaceGame.GameOver)
                 {
-                    RoundStart(round_num);
+                    RoundStarter(roundNumber);
                     SpaceRaceGame.PlayOneRound();
-                    ShowRoundResults();
-                    round_num++;
+                    DisplayResults();
+                    roundNumber++;
                 }
-                ShowGameResults();
+                DisplayRanking();
             }
-            while (PlayAgain());
+            while(PlayAgain());
 
-            ThankyouMsg();           
+            GoodbyeMessage();           
                 
             PressEnter();
 
@@ -76,33 +76,33 @@ namespace Space_Race
             Console.ReadLine();
         } // end PressAny
 
-        static int AskForPlayers()
+        static int GetInput_numberOfPlayers()
         {
-            string raw_input = "";
-            int player_num = 0;
+            string usrInput = "";
+            int numberOfPlayers = 0;
 
             Console.WriteLine("\tThis game is for 2 to 6 players.");
             Console.Write("\tNumber of players (2-6): ");
-            raw_input = Console.ReadLine();
+            usrInput = Console.ReadLine();
 
-            if ((int.TryParse(raw_input, out player_num)) && (player_num >= SpaceRaceGame.MIN_PLAYERS) && (player_num <= SpaceRaceGame.MAX_PLAYERS))
+            if ((int.TryParse(usrInput, out numberOfPlayers)) && (numberOfPlayers >= SpaceRaceGame.MIN_PLAYERS) && (numberOfPlayers <= SpaceRaceGame.MAX_PLAYERS))
             {
-                return player_num;
+                return numberOfPlayers;
             }
             else
             {
                 Console.WriteLine("Error: Invalid number of players entered.");
-                return AskForPlayers();
+                return GetInput_numberOfPlayers();
             }
         }
-        static void ShowRoundResults()
+        static void DisplayResults()
         {
             foreach (Player player in SpaceRaceGame.Players)
             {
                 Console.WriteLine(String.Format("\t{0} on square {1} with {2} yottawatt of power remaining", player.Name, player.Position, player.RocketFuel));
             }
         }
-        static void RoundStart(int round_number)
+        static void RoundStarter(int round_number)
         {
             Console.WriteLine("\n\nPress Enter to play a round...");
             Console.ReadLine();
@@ -119,54 +119,38 @@ namespace Space_Race
         {
             string userInput = "";
 
-
             Console.Write("\tPlay Again? (Y or N): ");
             userInput = Console.ReadLine();
 
-
-            //Calls Method again, to play game again
+            //return true or false based on user input - call method
             if (userInput == "Y" || userInput == "y")
             {
                 return true;
             }
-
-
-            //Terminate Game
             else
             {
                 return false;
             }
         }
-        static void ShowGameResults()
+        static void DisplayRanking()
         {
-            //Display the results of the game (see SpaceRaceGame.cs)
+            //from : game logic - SpaceRaceGame
+            //display for each player and wait for user to hit ENTER
             Console.WriteLine(SpaceRaceGame.DisplayGameResults());
 
-
-            //Individual Results
             Console.WriteLine("\tIndividual players finished at the locations specified.");
             foreach (Player player in SpaceRaceGame.Players)
             {
                 Console.WriteLine(String.Format("\n\t\t{0} with {1} yottawatt of power at square {2}", player.Name, player.RocketFuel, player.Position));
             }
-
-
-            //Wait for the user to press enter
             Console.WriteLine("\n\n\tPress Enter key to continue...");
             Console.ReadLine();
         }
 
-
-        /// <summary>
-        /// Display the exit message.
-        /// </summary>
-        static void ThankyouMsg()
+        // end game gracefully with message
+        static void GoodbyeMessage()
         {
-
-
-            Console.WriteLine("\n\n\tThanks for playing Space Race");
-
-
+            Console.WriteLine("\n\n\tThanks for playing Space Race.");
         }
     }//end Console class
 }

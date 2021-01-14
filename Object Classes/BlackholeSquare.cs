@@ -1,22 +1,24 @@
 ﻿using System.Diagnostics;
 
-namespace Object_Classes {
+namespace Object_Classes
+{
     /// <summary>
     /// Blackhole Square has a destination position and
     /// fuel used to jump to that position
     /// </summary>
-    public class BlackholeSquare : Square {
+    public class BlackholeSquare : Square
+    {
         private int destination, fuelUsed;
 
         public BlackholeSquare(string name, int number, int next, int fuel)
-                                    : base(name, number) 
+                                    : base(name, number)
         {
             destination = next;
             fuelUsed = fuel;
         }
 
 
-        public override Square NextSquare() 
+        public override Square NextSquare()
         {
             return Board.Squares[destination];
         }//end NextSquare

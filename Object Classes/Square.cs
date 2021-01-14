@@ -1,14 +1,18 @@
 ﻿using System;
 
-namespace Object_Classes {
+namespace Object_Classes
+{
     /// <summary>
     /// A Ordinary square, the Start nd Finish squares as well as being the parent (superclass)
     ///  for a Blackhole Square and a Wormhole Square
     /// </summary>
-    public class Square  {
+    public class Square
+    {
         private int number;
-        public int Number {
-            get {
+        public int Number
+        {
+            get
+            {
                 return number;
             }
         }
@@ -16,8 +20,10 @@ namespace Object_Classes {
         // The name of this square. 
         // Usually a string version of its number, but not for the Start and Finish squares.
         private string name;
-        public string Name {
-            get {
+        public string Name
+        {
+            get
+            {
                 return name;
             }
         }
@@ -26,10 +32,11 @@ namespace Object_Classes {
         //
         // Indicates the final destination square a player moves to if they land
         // on a Wormhole or Blackhole Square at the completion of their move.
-        public virtual Square NextSquare() {
+        public virtual Square NextSquare()
+        {
             return null;
         }
-         
+
 
         /// <summary>
         /// Parameterless constructor.
@@ -40,7 +47,8 @@ namespace Object_Classes {
         /// Post: ALWAYS throws an ArgumentException.
         /// </summary>
         /// <remarks>NOT TO BE USED!</remarks>
-        public Square() {
+        public Square()
+        {
             throw new ArgumentException("Parameterless constructor invalid.");
         } // end Square constructor
 
@@ -49,7 +57,8 @@ namespace Object_Classes {
         /// </summary>
         /// <param name="name">Name for this square</param>
         /// <param name="Id">ID for this square</param>
-        public Square(string name, int number) {
+        public Square(string name, int number)
+        {
             this.name = name;
             this.number = number;
         } // end Square constructor
@@ -69,7 +78,8 @@ namespace Object_Classes {
         /// </summary>
         /// <param name="player">who landed on this square</param>
         /// <remarks>Virtual method</remarks>
-        public virtual void LandOn(Player player) {
+        public virtual void LandOn(Player player)
+        {
             const int fuelUsed = 2;
 
             player.ConsumeFuel(fuelUsed);
@@ -86,7 +96,8 @@ namespace Object_Classes {
         /// true if the square is the start square,
         /// false otherwise
         /// </returns>
-        public bool IsStart() {
+        public bool IsStart()
+        {
             // check whether the location is the 'start' square.
             return (Number == Board.START_SQUARE_NUMBER);
         }

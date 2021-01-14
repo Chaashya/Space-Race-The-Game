@@ -1,25 +1,26 @@
 ﻿using System.Diagnostics;
 
-namespace Object_Classes {
+namespace Object_Classes
+{
     /// <summary>
     /// Wormhole Square has a destination position and
     /// fuel used to jump to that position
     /// </summary>
-    public class WormholeSquare : Square 
+    public class WormholeSquare : Square
     {
         private int destination, fuelUsed;
 
         public WormholeSquare(string name, int number, int next, int fuel)
-                                    : base(name, number) 
+                                    : base(name, number)
         {
             destination = next;
             fuelUsed = fuel;
         }
 
 
-        public override Square NextSquare() 
-        { 
-                return Board.Squares[destination];
+        public override Square NextSquare()
+        {
+            return Board.Squares[destination];
         }//end NextSquare
 
         /// <summary>  
@@ -31,7 +32,7 @@ namespace Object_Classes {
         /// Post: amount of fuel is consumed, player's location and position 
         ///        on the Board is udated
         /// </summary>
-        public override void LandOn(Player player) 
+        public override void LandOn(Player player)
         {
             player.Location = player.Location.NextSquare();
 

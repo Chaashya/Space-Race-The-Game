@@ -44,7 +44,7 @@ namespace GUI_Class
             BorderStyle = BorderStyle.FixedSingle;
             BackColor = Color.SlateGray;
 
-            //SetSquareImage();
+            SetSquareImage();
         }
 
         private void SetSquareImage() {

@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Diagnostics;
 
+
 namespace Object_Classes {
     /// <summary>
     /// A player who is currently located  on a particular square 
@@ -26,7 +27,6 @@ namespace Object_Classes {
             get {
                 return position;
             }
-
             set {
                 position = value;
             }
@@ -42,7 +42,6 @@ namespace Object_Classes {
                 location = value;
             }
         }
-
 
         // amount of rocket fuel remaining for this player
         private int fuelLeft;
@@ -67,6 +66,7 @@ namespace Object_Classes {
             }
         }
 
+
         private bool atFinish;
         public bool AtFinish {
             get {
@@ -76,6 +76,7 @@ namespace Object_Classes {
                 atFinish = value;
             }
         }
+
 
         private Brush playerTokenColour;
         public Brush PlayerTokenColour {
@@ -92,12 +93,14 @@ namespace Object_Classes {
             }
         }
 
+
         private Image playerTokenImage;
         public Image PlayerTokenImage {
             get {
                 return playerTokenImage;
             }
         }
+
 
         /// <summary>
         /// Parameterless constructor.
@@ -112,6 +115,7 @@ namespace Object_Classes {
             throw new ArgumentException("Parameterless constructor invalid.");
         } // end Player constructor
 
+
         /// <summary>
         /// Constructor with initialising parameters.
         /// Pre:  name to be used for this player.
@@ -123,12 +127,13 @@ namespace Object_Classes {
             Name = name;
         } // end Player constructor
 
+
         /// <summary>
         /// Rolls the two dice to determine 
         ///     the number of squares to move forward;
         ///     moves the player position on the board; 
         ///     updates the player's location to new position; and
-        ///     determines the poutcome of landing on this square.
+        ///     determines the outcome of landing on this square.
         /// Pre: the dice are itialised
         /// Post: the player is moved along the board and the effect
         ///     of the location the player landed on is applied.
@@ -136,14 +141,28 @@ namespace Object_Classes {
         /// <param name="d1">first die</param>
         /// <param name="d2">second die</param>
         public void Play(Die d1, Die d2) {
+            //[PLAY] changes player position if HasPower and !finished
+            /*(to do this:
+            - after dice roll - add total value and move player by same amount.
+            - determine type of square player landed on
+            - even if roll value exceeds amount to reach finish, player must end on 
+            last square -> change in position & location
+            */
+            if ((!ReachedFinalSquare()) && HasPower)
+            {
+                Position += (d1.Roll() + d2.Roll());
+                if (ReachedFinalSquare())
+                {
+                    Position = Board.FINISH_SQUARE_NUMBER;
+                }
+                Location = Board.Squares[Position];
 
-            //  CODE NEEDS TO BE ADDED HERE
-
-
+                Location.LandOn(this); 
+            }
         } // end Play.
 
 
-        // <summary>
+        /// <summary>
         /// Consumes specified amount of fuel.
         /// 
         /// if insufficent fuel remains, fuel set to zero
@@ -152,28 +171,37 @@ namespace Object_Classes {
         /// <param name="amount">amount of fuel used</param>
         public void ConsumeFuel(int amount) {
             Debug.Assert(amount > 0, "amount > 0");
-            if (fuelLeft > amount) {
+            if (fuelLeft > amount)
+            {
                 fuelLeft -= amount;
-            } else {
+            }
+            else {
                 fuelLeft = 0;
                 HasPower = false;
             }
         } //end ConskeFuel;
 
 
+
+
         /// <summary>
-        ///  Checks if this player has reached the end of the game
+        ///  Checks if this player has reached the end of the game (end pos)
         /// </summary>
         /// <returns>true if reached the Final Square</returns>
-        private bool ReachedFinalSquare() {
-
-            //  CODE NEEDS TO BE ADDED HERE
-
-            return false; // so the class can compile without error
+        ///  
+        private bool ReachedFinalSquare()
+        {
+            if (position >= Board.FINISH_SQUARE_NUMBER)
+            {
+                AtFinish = true;
+            }
+            else
+            {
+                AtFinish = false;
+            }
+            return AtFinish;
+            //return false;
         } //end ReachedFinalSquare
 
-
-
     } //end class Player
-
 }

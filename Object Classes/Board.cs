@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 
-namespace Object_Classes {
+
+namespace Object_Classes
+{
     /// <summary>
     /// Models a game board for Space Race consisting of three different types of squares
     /// 
@@ -10,7 +12,8 @@ namespace Object_Classes {
     /// results in the player moving to another square
     /// 
     /// </summary>
-    public static class Board {
+    public static class Board
+    {
         /// <summary>
         /// Models a game board for Space Race consisting of three different types of squares
         /// 
@@ -28,20 +31,23 @@ namespace Object_Classes {
 
         private static Square[] squares = new Square[NUMBER_OF_SQUARES];
 
-        public static Square[] Squares {
-            get {
+        public static Square[] Squares
+        {
+            get
+            {
                 Debug.Assert(squares != null, "squares != null",
                    "The game board has not been instantiated");
                 return squares;
             }
         }
 
-        public static Square StartSquare {
-            get {
+        public static Square StartSquare
+        {
+            get
+            {
                 return squares[START_SQUARE_NUMBER];
             }
         }
-
 
         /// <summary>
         ///  Eight Wormhole squares.
@@ -53,15 +59,16 @@ namespace Object_Classes {
         /// </summary>
         private static int[,] wormHoles =
         {
-            {2, 22, 10},
-            {3, 9, 3},
-            {5, 17, 6},
-            {12, 24, 6},
-            {16, 47, 15},
-            {29, 38, 4},
-            {40, 51, 5},
-            {45, 54, 4}
-        };
+                {2, 22, 10},
+                {3, 9, 3},
+                {5, 17, 6},
+                {12, 24, 6},
+                {16, 47, 15},
+                {29, 38, 4},
+                {40, 51, 5},
+                {45, 54, 4}
+            };
+
 
         /// <summary>
         ///  Eight Blackhole squares.
@@ -73,15 +80,17 @@ namespace Object_Classes {
         /// </summary>
         private static int[,] blackHoles =
         {
-            {10, 4, 6},
-            {26, 8, 18},
-            {30, 19, 11},
-            {35,11, 24},
-            {36, 34, 2},
-            {49, 13, 36},
-            {52, 41, 11},
-            {53, 42, 11}
-        };
+                {10, 4, 6},
+                {26, 8, 18},
+                {30, 19, 11},
+                {35, 11, 24},
+                {36, 34, 2},
+                {49, 13, 36},
+                {52, 41, 11},
+                {53, 42, 11}
+            };
+
+
 
 
         /// <summary>
@@ -92,48 +101,58 @@ namespace Object_Classes {
         /// Pre:  none
         /// Post: board is constructed
         /// </summary>
-        public static void SetUpBoard() {
-
+        public static void SetUpBoard()
+        {
             // Create the 'start' square where all players will start.
             squares[START_SQUARE_NUMBER] = new Square("Start", START_SQUARE_NUMBER);
-
+            
             // Create the main part of the board, squares 1 .. 54
-            //  CODE NEEDS TO BE ADDED HERE
-            //
-            string typeOfSquare = "";
-
-            for (int CURRENT_SQUARE = START_SQUARE_NUMBER + 1; CURRENT_SQUARE < FINISH_SQUARE_NUMBER; CURRENT_SQUARE++)
-            {
-                typeOfSquare = string.Format("{0},", CURRENT_SQUARE);
-                int blackhole_destination_pos;
-                int blackhole_fuel_consumption;
-                int wormhole_destination_pos;
-                int wormhole_fuel_consumption;
-
-                FindDestSquare(blackHoles, CURRENT_SQUARE, out blackhole_destination_pos, out blackhole_fuel_consumption);
-                FindDestSquare(wormHoles, CURRENT_SQUARE, out wormhole_destination_pos, out wormhole_fuel_consumption);
-
-                if (blackhole_fuel_consumption > 0)
-                {
-                    squares[CURRENT_SQUARE] = new BlackholeSquare(typeOfSquare, CURRENT_SQUARE, blackhole_destination_pos, blackhole_fuel_consumption);
-                }
-                else if (wormhole_fuel_consumption > 0)
-                {
-                    squares[CURRENT_SQUARE] = new WormholeSquare(typeOfSquare, CURRENT_SQUARE, wormhole_destination_pos, wormhole_fuel_consumption);
-                }
-                else
-                {
-                    squares[CURRENT_SQUARE] = new Square(typeOfSquare, CURRENT_SQUARE);
-                }
-            }
-
             //   Need to call the appropriate constructor for each square
             //       either new Square(...),  new WormholeSquare(...) or new BlackholeSquare(...)
             //
 
+            string typeOfSquare = "";
+
+
+            for (int LIVE_SQUARE = (START_SQUARE_NUMBER + 1); LIVE_SQUARE < FINISH_SQUARE_NUMBER; LIVE_SQUARE++)
+            {
+                //WHERE live_square is the current square player is positioned on
+                //Check type of square; regular, blackhole, wormhole
+                /* To do this:
+                 * get live square value as string
+                 * use FindDestSquare & set vars for the irregular square types
+                 * use earlier square class for regular square type
+                 * if statement to check square based on fuel
+                */
+                typeOfSquare = string.Format("{0}", LIVE_SQUARE);
+
+                int blackhole_destNum; 
+                int blackhole_fuelAmount; 
+                                
+                int wormhole_destNum;
+                int wormhole_fuelAmount;
+
+
+                FindDestSquare(blackHoles, LIVE_SQUARE, out blackhole_destNum, out blackhole_fuelAmount);
+                FindDestSquare(wormHoles, LIVE_SQUARE, out wormhole_destNum, out wormhole_fuelAmount);
+
+                if (blackhole_fuelAmount > 0) 
+                {
+                    squares[LIVE_SQUARE] = new BlackholeSquare(typeOfSquare, LIVE_SQUARE, blackhole_destNum, blackhole_fuelAmount);
+                }
+                else if (wormhole_fuelAmount > 0) 
+                {
+                    squares[LIVE_SQUARE] = new WormholeSquare(typeOfSquare, LIVE_SQUARE, wormhole_destNum, wormhole_fuelAmount);
+                }
+                else 
+                {
+                    squares[LIVE_SQUARE] = new Square(typeOfSquare, LIVE_SQUARE);
+                }
+            }
             // Create the 'finish' square.
             squares[FINISH_SQUARE_NUMBER] = new Square("Finish", FINISH_SQUARE_NUMBER);
         } // end SetUpBoard
+
 
         /// <summary>
         /// Finds the destination square and the amount of fuel used for either a 
@@ -145,18 +164,22 @@ namespace Object_Classes {
         /// <param name="holes">a 2D array representing either the Wormholes or Blackholes squares information</param>
         /// <param name="squareNum"> a square number of either a Wormhole or Blackhole square</param>
         /// <param name="destNum"> destination square's number</param>
-        /// <param name="amount"> amont of fuel used to jump to the deestination square</param>
-        private static void FindDestSquare(int[,] holes, int squareNum, out int destNum, out int amount) {
+        /// <param name="amount"> amount of fuel used to jump to the destination square</param>
+        private static void FindDestSquare(int[,] holes, int squareNum, out int destNum, out int amount)
+        {
             const int start = 0, exit = 1, fuel = 2;
             destNum = 0; amount = 0;
 
-            //  CODE NEEDS TO BE ADDED HERE 
-            for (int current_hole = 0; current_hole < holes.GetLength(0); current_hole++)
+            //For loop through holes array -> blackholes or wormholes info
+            /*Check if the current hole is on correct square
+            Set vars*/
+
+            for (int holeNow = 0; holeNow < holes.GetLength(0); holeNow++)
             {
-                if (holes[current_hole, start] == squareNum)
+                if (holes[holeNow, start] == squareNum)
                 {
-                    destNum = holes[current_hole, exit];
-                    amount = holes[current_hole, fuel];
+                    destNum = holes[holeNow, exit]; 
+                    amount = holes[holeNow, fuel]; 
                 }
             }
         } //end FindDestSquare

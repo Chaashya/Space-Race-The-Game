@@ -58,23 +58,32 @@ namespace Game_Logic_Class
         /// </summary>
         public static void SetUpPlayers()
         {
-            // for number of players
-            //      create a new player object
-            //      initialize player's instance variables for start of a game
-            //      add player to the binding list
-            Players.Clear();
-            for (int current_player = 0; current_player < NumberOfPlayers; current_player++)
-            {
-                Player CurrentPlayer = new Player(names[current_player]);
-                CurrentPlayer.Position = Board.START_SQUARE_NUMBER;
-                CurrentPlayer.Location = Board.Squares[Board.START_SQUARE_NUMBER];
-                CurrentPlayer.RocketFuel = Player.INITIAL_FUEL_AMOUNT;
-                CurrentPlayer.HasPower = true;
+            /*
+            for number of players
+                create a new player object
+                initialize player's instance variables for start of a game
+                add player to the binding list
+            */
+            /*Clear players, add new players to new game for number selected
+             * from array, place on square
+             */
 
-                CurrentPlayer.PlayerTokenColour = playerTokenColours[current_player];
-                players.Add(CurrentPlayer);
+            Players.Clear();
+            for (int livePlayer = 0; livePlayer < NumberOfPlayers; livePlayer++)
+            {
+                Player Current_player = new Player(names[livePlayer]);
+                Current_player.Position = Board.START_SQUARE_NUMBER; 
+                Current_player.Location = Board.Squares[Board.START_SQUARE_NUMBER];
+                //power & fuel              
+                Current_player.HasPower = true;
+                Current_player.RocketFuel = Player.INITIAL_FUEL_AMOUNT;
+
+                Current_player.PlayerTokenColour = playerTokenColours[livePlayer];
+
+                players.Add(Current_player);
             }
         }
+
 
         /// <summary>
         ///  Plays one round of a game
@@ -83,17 +92,16 @@ namespace Game_Logic_Class
         {
             if (SingleStep)
             {
-                Players[PlayerNum].Play(die1, die2);
-                if (PlayerNum == (NumberOfPlayers - 1))
+                Players[Player_number].Play(die1, die2);
+                if (Player_number == (NumberOfPlayers - 1))
                 {
-                    CheckIfGameFinished();
-                    PlayerNum = 0;
+                    GameOverCheck();
+                    Player_number = 0;
 
                 }
-
                 else
                 {
-                    PlayerNum++;
+                    Player_number++;
                 }
             }
             else
@@ -102,24 +110,24 @@ namespace Game_Logic_Class
                 {
                     player.Play(die1, die2);
                 }
-                CheckIfGameFinished();
+                GameOverCheck();
             }
         }
 
-        private static bool gameFinished;
-        public static bool GameFinished
+        private static bool gameOver;
+        public static bool GameOver
         {
             get
             {
-                return gameFinished;
+                return gameOver;
             }
 
             set
             {
-                gameFinished = value;
+                gameOver = value;
             }
 
-        }//end SnakesAndLadders
+        }
         private static bool singleStep;
         public static bool SingleStep
         {
@@ -134,7 +142,7 @@ namespace Game_Logic_Class
             }
         }
         private static int playerNum = 0;
-        public static int PlayerNum
+        public static int Player_number
         {
             get
             {
@@ -147,58 +155,53 @@ namespace Game_Logic_Class
             }
         }
 
-        public static string final_output { get; private set; }
+        public static string resultText { get; private set; }
 
         public static string DisplayGameResults()
         {
-            bool playerFinished = false;
-            string final_output = " ";
-            string finish_players = "";
+            bool playerReachedEnd = false;
+            string resultText = " ";
+            string winners = "";
 
             foreach (Player player in Players)
             {
                 if (player.AtFinish)
                 {
-                    finish_players += string.Format("\n\t\t{0}", player.Name);
-                    playerFinished = true;
+                    winners += string.Format("\n\t\t{0}", player.Name);
+                    playerReachedEnd = true;
                 }
             }
 
-            if (playerFinished) 
+            if (playerReachedEnd) 
             {
-                final_output += ("\n\n\tThe following player(s) finished the game.\n");
-                final_output += (finish_players + "\n\n");
+                resultText += ("\n\n\tThe following player(s) finished the game.\n");
+                resultText += (winners + "\n\n");
             }
             else 
+            //exception statement
             {
-                final_output += ("\n\n\tNo players finished the game\n");
+                resultText += ("\n\n\tNo players finished the game\n");
             }
 
-            return final_output;
+            return resultText;
         }
 
 
-        /// <summary>
-        /// At the end of a round, checks that any player is at the finish or if all players cannot move (out of fuel)
-        /// Sets the property 'GameFinished' to true if the game is finished.
-        /// </summary>
-        private static void CheckIfGameFinished()
+        /// checks if game is over based on player position and fuel amount
+        private static void GameOverCheck()
         {
-            //Should only be called at the end of the last player's turn in single step mode.
-            bool allPlayersNoPower = true;
-
+            bool outOfPower_forAll = true;
 
             foreach (Player player in Players)
             {
-                //Check if at least one player has power
+                //single player check
                 if (player.HasPower)
                 {
-                    allPlayersNoPower = false;
+                    outOfPower_forAll = false;
                 }
-                //Check that it is the end of the game on the current round
-                if (player.AtFinish || allPlayersNoPower)
+                if (player.AtFinish || outOfPower_forAll)
                 {
-                    GameFinished = true;
+                    GameOver = true;
                 }
             }
         }

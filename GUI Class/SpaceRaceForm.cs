@@ -24,13 +24,13 @@ namespace GUI_Class
         {
             InitializeComponent();
 
-            Board.SetUpBoard();
-            ResizeGUIGameBoard();
-            SetUpGUIGameBoard();
-            SetupPlayersDataGridView();
-            DetermineNumberOfPlayers();
-            SpaceRaceGame.SetUpPlayers();
-            PrepareToPlay();
+             Board.SetUpBoard();
+             ResizeGUIGameBoard();
+             SetUpGUIGameBoard();
+             SetupPlayersDataGridView();
+             DetermineNumberOfPlayers();
+             SpaceRaceGame.SetUpPlayers();
+             PrepareToPlayGame();
         }
 
 
@@ -115,11 +115,16 @@ namespace GUI_Class
         private static void MapSquareNumToScreenRowAndColumn(int squareNum, out int screenRow, out int screenCol)
         {
             // Code needs to be added here to do the mapping
+            screenRow = (NUM_OF_ROWS - 1) - (int)(squareNum / NUM_OF_COLUMNS);
 
-            // Makes the compiler happy - these two lines below need to deleted 
-            //    once mapping code is written above
-            screenRow = 0;
-            screenCol = 0;
+            if ((screenRow % 2) == 0)
+            {
+                screenCol = (squareNum % NUM_OF_COLUMNS);
+            }
+            else
+            {
+                screenCol = (NUM_OF_COLUMNS - 1) - (squareNum % NUM_OF_COLUMNS);
+            }
 
         }//end MapSquareNumToScreenRowAndColumn
 
@@ -145,17 +150,17 @@ namespace GUI_Class
         private void DetermineNumberOfPlayers()
         {
             // Store the SelectedItem property of the ComboBox in a string
-            string string_number_selected = (string)PlayerNumberComboBox.SelectedItem;
+            string playerNumSelected = (string)comboBox1.SelectedItem;
             // Parse string to a number
-            int number_selected = int.Parse(string_number_selected);
+            int numberSelected = int.Parse(playerNumSelected);
             // Set the NumberOfPlayers in the SpaceRaceGame class to that number
-            SpaceRaceGame.NumberOfPlayers = number_selected;
+            SpaceRaceGame.NumberOfPlayers = numberSelected;
         }//end DetermineNumberOfPlayers
 
         /// <summary>
         /// The players' tokens are placed on the Start square
         /// </summary>
-        private void PrepareToPlay()
+        private void PrepareToPlayGame()
         {
             // More code will be needed here to deal with restarting 
             // a game after the Reset button has been clicked. 
@@ -190,6 +195,7 @@ namespace GUI_Class
             //
             MapSquareNumToScreenRowAndColumn(squareNum, out screenRow, out screenCol);
             return (SquareControl)tableLayoutPanel.GetControlFromPosition(screenCol, screenRow);
+
         }
 
 
@@ -202,8 +208,8 @@ namespace GUI_Class
         /// <returns>Returns the square number of the player.</returns>
         private int GetSquareNumberOfPlayer(int playerNumber)
         {
-            // Code needs to be added here.
             return SpaceRaceGame.Players[playerNumber].Position;
+
         }//end GetSquareNumberOfPlayer
 
 
@@ -259,62 +265,63 @@ namespace GUI_Class
             //       retrieve the SquareControl object with that square number
             //       using the typeOfGuiUpdate, update the appropriate element of 
             //          the ContainsPlayers array of the SquareControl object.
-            //          
+            //      
+
             for (int player = 0; player < SpaceRaceGame.NumberOfPlayers; player++)
             {
-                int square_number = GetSquareNumberOfPlayer(player);
-                SquareControl player_square = SquareControlAt(square_number);
+                //Find square number
+                int squareNumber = GetSquareNumberOfPlayer(player);
+
+
+                //Get the squarecontrol at the square number
+                SquareControl squareNumOfPlayer = SquareControlAt(squareNumber);
 
 
                 if (typeOfGuiUpdate == TypeOfGuiUpdate.AddPlayer)
                 {
-                    player_square.ContainsPlayers[player] = true;
+                    squareNumOfPlayer.ContainsPlayers[player] = true;
                 }
                 else if (typeOfGuiUpdate == TypeOfGuiUpdate.RemovePlayer)
                 {
-                    player_square.ContainsPlayers[player] = false;
+                    squareNumOfPlayer.ContainsPlayers[player] = false;
                 }
+
+
             }
             RefreshBoardTablePanelLayout();//must be the last line in this method. Do not put inside above loop.
         } //end UpdatePlayersGuiLocations
 
+
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            PlayerNumberComboBox.Enabled = false;
-            //Remove tokens
+            comboBox1.Enabled = false;
             UpdatePlayersGuiLocations(TypeOfGuiUpdate.RemovePlayer);
-            //Reset players
-            SpaceRaceGame.NumberOfPlayers = int.Parse(PlayerNumberComboBox.Text);
+            SpaceRaceGame.NumberOfPlayers = int.Parse(comboBox1.Text);
             SpaceRaceGame.SetUpPlayers();
-            //Update the Gui
             UpdatesPlayersDataGridView();
-            //Add tokens back at start positions
             UpdatePlayersGuiLocations(TypeOfGuiUpdate.AddPlayer);
-            /*
-            //Re-enable so user can change players again (d)
-            PlayerNumberComboBox.Enabled = true;
-            */
 
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            RollDiceButton.Enabled = false;
-
+            RollDiceButton_Click.Enabled = false;
             button2.Enabled = false;
             exitButton.Enabled = false;
-
-            groupBox.Enabled = false;
-
-            PlayerNumberComboBox.Enabled = false;
+            groupBox1.Enabled = false;
+            comboBox1.Enabled = false;
             playersDataGridView.Enabled = false;
 
             UpdatePlayersGuiLocations(TypeOfGuiUpdate.RemovePlayer);
 
+
+            //Play one round
             SpaceRaceGame.PlayOneRound();
 
+            //reset available if round finishes on single step 
             if (SpaceRaceGame.SingleStep)
             {
+                //from game logic - SpaceRaceGame.PlayOneRound()
                 if (SpaceRaceGame.PlayerNum == 0)
                 {
                     button2.Enabled = true;
@@ -326,17 +333,21 @@ namespace GUI_Class
                 button2.Enabled = true;
                 exitButton.Enabled = true;
             }
+
+
             UpdatePlayersGuiLocations(TypeOfGuiUpdate.AddPlayer);
             UpdatesPlayersDataGridView();
-            RollDiceButton.Enabled = true;
+
+
+            //allow rolls
+            RollDiceButton_Click.Enabled = true;
+
+
+            //if game is finished - remove roll availability
             if (SpaceRaceGame.GameFinished)
             {
-                //Disable roll button
-                RollDiceButton.Enabled = false;
-
-
+                RollDiceButton_Click.Enabled = false;
                 var msg_box = MessageBox.Show(SpaceRaceGame.DisplayGameResults());
-
 
             }
 
@@ -350,54 +361,48 @@ namespace GUI_Class
         private void button2_Click(object sender, EventArgs e)
         {
             button2.Enabled = false;
-            RollDiceButton.Enabled = false;
+            RollDiceButton_Click.Enabled = false;
 
 
-            //Enable the Step selector box again
-            groupBox.Enabled = true;
+            groupBox1.Enabled = true;
             radioButtonNo.Checked = false;
             radioButtonYes.Checked = false;
 
 
-            //Allow the user to select the number of players and input names into grid view
-            PlayerNumberComboBox.Enabled = true;
+            comboBox1.Enabled = true;
             playersDataGridView.Enabled = true;
 
 
-            //Set the game finished to false
             SpaceRaceGame.GameFinished = false;
 
 
-            //Reset ready for another game
-            PrepareToPlay();
-            //MessageBox
+            PrepareToPlayGame();
+
         }
 
-        private void radioButtonNo_CheckedChanged(object sender, EventArgs e)
+        private void radioButtonNo_Click(object sender, EventArgs e)
         {
             SpaceRaceGame.SingleStep = false;
 
 
-            groupBox.Enabled = false;
+            groupBox1.Enabled = false;
 
 
-            //Allow them to start the game by enabling the rolldice button
-            RollDiceButton.Enabled = true;
+            RollDiceButton_Click.Enabled = true;
+
         }
 
-        private void radioButtonYes_CheckedChanged(object sender, EventArgs e)
+        private void radioButtonYes_Click(object sender, EventArgs e)
         {
             SpaceRaceGame.SingleStep = true;
             SpaceRaceGame.PlayerNum = 0;
 
 
-            groupBox.Enabled = false;
+            groupBox1.Enabled = false;
 
 
-            //Allow them to start the game by enabling the rolldice button
-            RollDiceButton.Enabled = true;
+            RollDiceButton_Click.Enabled = true;
 
         }
-    }
-}// end class
-
+    }// end class
+}
